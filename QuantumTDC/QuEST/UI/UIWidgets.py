@@ -48,8 +48,6 @@ class StartButton(Button):
         Button.__init__(self, master, text="Start", command=self.start, width=12)
         print(type(master))
         self.ui=master
-        print(type(self.ui))
-        print(type(self.ui.port_input))
         self.console=console
         self.all_data=all_data
         self.tdc_reader=all_data.tdc_reader
@@ -59,16 +57,15 @@ class StartButton(Button):
         #if(~self.tdc_reader==""):
         #    print("Thread already running")
         #else:
-        self.serial_reader=TDCReader()
-        print(type(self.serial_reader))
-        print(type(self.ui))
-        print(self.ui.port_input.get_data())
-        self.serial_reader.port=self.ui.port_input.get_data()
-        self.serial_reader.baudrate=self.ui.baud_input.get_data()
-        self.tdc_reader=TDCReaderThread(self.all_data.ut,self.all_data.good_ut,self.serial_reader)
-        self.tdc_reader.start()
-        self.display_ut=TextPadWriter(self.console.micro_time, self.all_data.ut)
-        self.display_ut.start()
+        self.serial_reader=TDCReader() #initialize the serial reader
+        self.serial_reader.port=self.ui.port_input.get_data() #set the port number
+        self.serial_reader.baudrate=self.ui.baud_input.get_data() #set the baudrate
+        self.tdc_reader=TDCReaderThread(self.all_data.ut,self.all_data.good_ut,self.all_data.good_utsend,self.serial_reader) #initalize the reader thread
+        self.tdc_reader.start() #start the thread
+        self.display_ut=TextPadWriter(self.console.micro_time, self.all_data.ut) #initialize the thread to put the data in the textpad
+        self.displaygoodut=TextPadWriter(self.console.good_utime, self.all_data.good_ut)
+        self.display_ut.start() #start putting the data in the textpad
+        self.displaygoodut.start()
         
         
 class StopButton(Button):        

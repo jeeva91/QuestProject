@@ -33,8 +33,8 @@ class Sender_Thread(Thread):
             #self.lock.acquire()
             pass
             if (~self.tosend.empty()):
-                data=self.tosend.get()
-                message=str(data)
+                message=self.tosend.get()
+                #message=str(data)
                 self.send_socket.send(message.encode('utf-8'))
             #self.lock.release()
                 

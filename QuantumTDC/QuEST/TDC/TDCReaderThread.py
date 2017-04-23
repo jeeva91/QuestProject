@@ -4,6 +4,8 @@ Created on Apr 13, 2017
 @author: jee11
 '''
 from threading import Thread
+import re
+import datetime
 
 class TDCReaderThread(Thread):
     '''
@@ -11,13 +13,12 @@ class TDCReaderThread(Thread):
     '''
 
 
-    def __init__(self, time_queue,send_queue,tdc_reader):
+    def __init__(self, hash_queue, tdc_reader):
         '''
         Constructor
         '''
         Thread.__init__(self)
-        self.time_queue=time_queue
-        self.send_queue=send_queue
+        self.hash_queue=hash_queue
         self.tdc_reader=tdc_reader
         self.tdc_switch="True"
         self.tdc_reader.start_TDC()
@@ -27,11 +28,13 @@ class TDCReaderThread(Thread):
         
     def start_reading(self):
         while(self.tdc_switch=="True"):
-            data=self.tdc_reader.readline()
+            byte_data=self.tdc_reader.readline()
+            string_data=byte_data.decode('utf-8')
+            macrotime=datetime.date.strftime(datetime.datetime.now(),'%m:%d_%H:%M:%S:%f')
+            data=macrotime+" "+string_data
             print(data)
-            self.time_queue.put(data)
-            self.send_queue.put(data)
-            
+            self.hash_queue.put(data)
+                        
     def stop_reading(self):
         self.tdc_switch="False"
         

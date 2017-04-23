@@ -3,8 +3,7 @@ Created on Apr 1, 2017
 
 @author: jee11
 '''
-from threading import Thread
-from threading import Lock
+from threading import Thread, Lock
 from queue import Queue
 from _overlapped import NULL
 from _socket import socket
