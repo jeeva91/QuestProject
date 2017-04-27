@@ -27,10 +27,9 @@ class SaveFile(Thread):
         self.setDaemon("True")
         
     def run(self):
-        while(self.switch):
-            while(~self.save_data.empty()):
-                self.datafile.write(self.save_data.get())
-                self.datafile.write("\n")
+        while(~self.save_data.empty()):
+            self.datafile.write(self.save_data.get())
+            self.datafile.write("\n")
         self.datafile.close()
         
                 

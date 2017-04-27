@@ -13,6 +13,8 @@ from QuEST.TDC.TDCReaderThread import TDCReaderThread
 from QuEST.COM.My_TCP import My_TCP
 from QuEST.COM.Receiver_Thread import Receiver_Thread
 from QuEST.COM.Sender_Thread import Sender_Thread
+from QuEST.TDC.SaveFile import SaveFile
+from QuEST.UI.Messenger import Messenger
 class InputFrame(Frame):
     def __init__(self,master,label_text="label"):
         Frame.__init__(self, master,width=350,height=70)
@@ -87,9 +89,11 @@ class StopButton(Button):
     def __init__(self,master, alldata):
         Button.__init__(self,master,text="Stop",command=self.stop,width=12)
         self.serial_reader=alldata.tdc_reader
+        self.saver=master.saver
     def stop(self):
         pass
         print("Stopping to read from TDC")
+        self.saver.config(state=NORMAL)
         if(~(str(type(self.serial_reader))=="<class 'str'>")): 
             if(self.serial_reader.is_alive()):
                 self.serial_reader.stop_reading()
@@ -141,7 +145,27 @@ class StartSendingButton(Button):
         self.mytcpsocket=mytcpsocket
     def send(self):
         pass
-        print("Communicating with the other lab")        
+        print("Communicating with the other lab")
+        
+class MessengerButton(Button):
+    def __init__(self,master, alldata):
+        Button.__init__(self,master,text="Messenger",command=self.start_messenger,width=12)
+        self.alldata=alldata
+    def start_messenger(self):
+        pass
+        print("Starting the messenger")
+        self.messenger=Messenger(self.alldata)
+        self.messenger.mainloop()
+class SaveButton(Button):
+    def __init__(self,master, alldata):
+        Button.__init__(self,master,text="Save",command=self.start_save,width=12)
+        self.save_data=alldata.save_data
+        self.config(state=DISABLED)
+    def start_save(self):
+        pass
+        print("Starting the messenger")
+        self.saver=SaveFile(self.save_data)
+        self.saver.start()
         
 class ConsoleFrame(Frame):
     def __init__(self,master, console_name="micro time"):
