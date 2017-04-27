@@ -18,7 +18,7 @@ class Receiver_Thread(Thread):
         '''
         Constructor
         '''
-        self.receiver_switch="True"
+        self.switch="True"
         self.received=received
         self.rcv_socket=rcv_socket
         self.lock=lock
@@ -29,12 +29,14 @@ class Receiver_Thread(Thread):
         self.receive()
     
     def receive(self):
-        while(self.receiver_switch=="True"):
+        while(self.switch=="True"):
             pass
             #self.lock.acquire()
             data=self.rcv_socket.recv(1024)
             self.received.put(data)
             #self.lock.release()
             time.sleep(0.25)
-            
+    
+    def off(self):
+        self.switch="False"        
                 

@@ -38,7 +38,8 @@ class Sender_Thread(Thread):
                 self.send_socket.send(message.encode('utf-8'))
             #self.lock.release()
                 
-                
+    def off(self):
+        self.sender_switch="False"            
             
         
         

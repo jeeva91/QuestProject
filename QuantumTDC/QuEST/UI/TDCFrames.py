@@ -37,7 +37,7 @@ class SettingsFrame(Frame):
         self.conect=UIWidgets.ConnectButton(self,self.all_data)
         self.disconnect=UIWidgets.DisconnectButton(self,self.all_data)
         
-        self.start_sending=UIWidgets.StartSendingButton(self,mytcpsocket="null")
+        self.start_sending=UIWidgets.StartSendingButton(self,self.all_data)
         self.messenger=UIWidgets.MessengerButton(self,self.all_data)
         
         self.comm_part.grid(row=0,column=1,sticky=W)

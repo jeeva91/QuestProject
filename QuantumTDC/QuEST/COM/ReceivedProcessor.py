@@ -24,12 +24,13 @@ class ReceivedProcessor(Thread):
         self.send_queue=alldata.send_data
         self.xor_switch="True"
         self.message=alldata.displaymessage
+        self.processor_switch=1
         
     def run(self):
         self.process()
         
     def process(self):
-        while(True):
+        while(processor_switch):
             if(~self.received.empty()):
                 bytedata=self.received.get()
                 data=bytedata.decode('utf-8')
@@ -63,6 +64,9 @@ class ReceivedProcessor(Thread):
             
         
     def process_message(self,enc_message):
-        self.message.put(enc_message)           
+        self.message.put("Sender: " + enc_message) 
+        
+    def off(self):
+        self.processor_switch=0          
         
         
