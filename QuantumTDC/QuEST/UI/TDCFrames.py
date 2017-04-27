@@ -17,7 +17,7 @@ class SettingsFrame(Frame):
         self.baud_input=UIWidgets.InputFrame(self,label_text="Baud rate")
         self.change_button=UIWidgets.ChangeButton(self,self.all_data)
         self.start_button=UIWidgets.StartButton(self,master.console,self.all_data)
-        self.stop_button=UIWidgets.StopButton(self,serial_reader_thread="null")
+        self.stop_button=UIWidgets.StopButton(self,self.all_data)
         
         self.TDC_part.grid(row=0, column=0, sticky=W)
         self.port_input.grid(row=1,column=0, sticky=W)
@@ -46,7 +46,11 @@ class AllConsole(Frame):
     def __init__(self,master,all_data):
         Frame.__init__(self,master)
         self.all_data=all_data
-        self.micro_time=UIWidgets.ConsoleFrame(self,time_queue="null",console_name="micro time")
-        self.good_utime=UIWidgets.ConsoleFrame(self,time_queue="null",console_name="good micro time")
+        self.micro_time=UIWidgets.ConsoleFrame(self, console_name="micro time")
+        self.good_utime=UIWidgets.ConsoleFrame(self, console_name="good micro time")
+        self.sent_data=UIWidgets.ConsoleFrame(self, console_name="data Sent")
+        self.received_data=UIWidgets.ConsoleFrame(self, console_name="data Received")
         self.micro_time.grid(row=0,column=0,sticky=W)
         self.good_utime.grid(row=0,column=1,sticky=W)
+        self.sent_data.grid(row=0,column=2,sticky=W)
+        self.received_data.grid(row=0,column=3,sticky=W)

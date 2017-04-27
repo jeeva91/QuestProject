@@ -10,5 +10,5 @@ from QuEST import EncryptorData
 all_data=EncryptorData.EncrptorData()
 ui=EncryptionUI(all_data)
 ui.mainloop()
-dog=""
+
 

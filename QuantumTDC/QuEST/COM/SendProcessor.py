@@ -23,6 +23,7 @@ class SendProcessor(Thread):
         #self.lock=lock
         self.key1, self.key2, self.send_data=""
         self.value1, self.value2, self.xor = 0
+        self.switch="True"
         
         
         
@@ -32,7 +33,7 @@ class SendProcessor(Thread):
         self.send()
         
     def send(self):
-        while(True):
+        while(self.switch=="True"):
             print("inside send")
             if(~self.good_ut.emtpy()):
                 self.key1,self.value1 = self.dividor(self.good_ut.get())
@@ -49,5 +50,8 @@ class SendProcessor(Thread):
         key=key_value[0]
         value=int(key_value[2])
         return key, value
+    
+    def off(self):
+        self.swich="False"
             
         

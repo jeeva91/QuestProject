@@ -22,6 +22,7 @@ class KeyHasher(Thread):
         self.ut=alldata.ut
         self.send_ut=alldata.good_utsend
         self.hashed_key=alldata.key
+        self.save_data=alldata.save_data
         self.key
         self.data
         self.value
@@ -35,6 +36,7 @@ class KeyHasher(Thread):
                 self.key, self.value=self.decompose(self.hash_queue.get())
                 self.data=self.key + str(self.value)
                 self.ut.put(self.data)
+                self.save_data.put(self.data)
                 if(self.value>0):
                     self.goodut.put(self.data)
                     self.send_ut.put(self.data)

@@ -23,10 +23,13 @@ class EncrptorData(object):
         self.received_data=Queue(0) #receiver and processor
         self.hash_queue=Queue(0)    #hasher
         self.send_data=Queue(0)     #for tcp sending
+        self.save_data=Queue(0)
         self.encrypt_socket=""
         self.tdc_serial=""
         self.tdc_reader=""
         self.receiver=""
+        self.sender=""
+        self.saver=""
         self.displaymessage=Queue(0) #to display message
         self.key={"":0}
         

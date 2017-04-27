@@ -12,13 +12,18 @@ class ReceivedProcessor(Thread):
     '''
 
 
-    def __init__(self, received=Queue(),lock=Lock()):
+    def __init__(self, alldata, lock=Lock()):
         '''
         Constructor
         '''
         Thread.__init__(self)
-        self.received=received
+        self.received=alldata.received_data
         self.lock=lock
+        self.key=alldata.key
+        self.goodkey=alldata.goodkey
+        self.send_queue=alldata.send_data
+        self.xor_switch="True"
+        self.message=alldata.displaymessage
         
     def run(self):
         self.process()
@@ -35,17 +40,29 @@ class ReceivedProcessor(Thread):
                 elif(command[0]=="stop"):
                     self.process_stop()
                 elif(command[0]=="XOR"):
-                    self.process_CRC(command[2])
+                    if(self.xor_switch=="true"):
+                        self.process_CRC(command[2])
                 elif(command[0]=="message"):
                     self.process_message(command[2])
     
     def process_goodut(self, mygooduts):
-        pass
+        decom=mygooduts.partition(" ")
+        self.goodkey.append([decom[0],decom[2]])
     def process_stop(self):
-        pass
+        self.xor_switch="False"
     def process_CRC(self,mycrcdata):
-        pass
+        decom=mycrcdata.partition(" ")
+        key1=decom[0]
+        decom=decom[2].partition(" ")
+        key2=decom[0]
+        xor=int(decom[2].strip(" "))
+        if(self.key[key1]^self.key[key2]==xor):
+            self.goodkey.append([key1,key2])
+            send_data="goodut " + key1+ " "+ key2
+            self.send_queue.put(send_data)
+            
+        
     def process_message(self,enc_message):
-        pass           
+        self.message.put(enc_message)           
         
         
