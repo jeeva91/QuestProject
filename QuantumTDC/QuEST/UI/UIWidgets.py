@@ -17,6 +17,7 @@ from QuEST.TDC.SaveFile import SaveFile
 from QuEST.UI.Messenger import Messenger
 from QuEST.COM.ReceivedProcessor import ReceivedProcessor
 from QuEST.COM.SendProcessor import SendProcessor
+from QuEST.TDC.KeyHasher import KeyHasher
 class InputFrame(Frame):
     def __init__(self,master,label_text="label"):
         Frame.__init__(self, master,width=350,height=70)
@@ -29,14 +30,14 @@ class InputFrame(Frame):
         self.entry.pack(side=RIGHT)
     def get_data(self):         
         data=self.entry.get()
-        print("inside get data "+data)
+        #print("inside get data "+data)
         if (data==''):
             if(self.label_text=="Port No"):
-                print("default port COM3 chosen")
+                #print("default port COM3 chosen")
                 data="COM3"
                 return data
             elif (self.label_text=="Baud rate"):
-                print("default baud rate 38400 chosen")
+                #print("default baud rate 38400 chosen")
                 data=38400
                 return data
             else: return data
@@ -81,6 +82,12 @@ class StartButton(Button):
         if(str(type(self.tdc_reader))=="<class 'str'>"):
             self.tdc_reader=TDCReaderThread(self.hash_queue,self.serial_reader) #initalize the reader thread
             self.tdc_reader.start() #start the thread
+            self.all_data.tdc_reader=self.tdc_reader
+            self.hasher=KeyHasher(self.all_data)
+            self.hasher.start()
+            self.all_data.hasher=self.hasher
+            print("from start printing the type of tdc reader " + str(type(self.tdc_reader)))
+            print(type(self.all_data.tdc_reader))
             self.display_ut=TextPadWriter(self.console.micro_time, self.all_data.ut) #initialize the thread to put the data in the textpad
             self.displaygoodut=TextPadWriter(self.console.good_utime, self.all_data.good_ut)
             self.display_ut.start() #start putting the data in the textpad
@@ -91,12 +98,18 @@ class StopButton(Button):
     def __init__(self,master, alldata):
         Button.__init__(self,master,text="Stop",command=self.stop,width=12)
         self.serial_reader=alldata.tdc_reader
+        self.alldata=alldata
+        print(type(self.serial_reader))
         self.saver=master.saver
     def stop(self):
         pass
         print("Stopping to read from TDC")
         self.saver.config(state=NORMAL)
+        print("inside stop button")
+        self.serial_reader=self.alldata.tdc_reader
+        print((str(type(self.serial_reader))=="<class 'str'>"))
         if(~(str(type(self.serial_reader))=="<class 'str'>")): 
+            print(type(self.serial_reader))
             if(self.serial_reader.is_alive()):
                 self.serial_reader.stop_reading()
                 self.serial_reader.join()
@@ -132,6 +145,7 @@ class ConnectButton(Button):
         self.receivedprocessor.start()
         self.sender=Sender_Thread(tosend=self.send_data,send_socket=self.encrypt_socket)
         self.sender.start()
+        
         
         
 class DisconnectButton(Button):        
@@ -188,7 +202,7 @@ class SaveButton(Button):
         self.config(state=DISABLED)
     def start_save(self):
         pass
-        print("Starting the messenger")
+        print("Starting to save")
         self.saver=SaveFile(self.save_data)
         self.saver.start()
         
@@ -214,6 +228,7 @@ class TextPadWriter(Thread):
             if(~self.data_queue.empty()):
                 data=self.data_queue.get()
                 self.text_pad.insert(END,data)
+                self.text_pad.insert(END,"\n")
                 self.text_pad.see(END)
                 self.data_queue.task_done() 
                 

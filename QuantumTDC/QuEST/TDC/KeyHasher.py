@@ -23,9 +23,7 @@ class KeyHasher(Thread):
         self.send_ut=alldata.good_utsend
         self.hashed_key=alldata.key
         self.save_data=alldata.save_data
-        self.key
-        self.data
-        self.value
+        
         
     def run(self):
         self.hasher()
@@ -34,7 +32,7 @@ class KeyHasher(Thread):
         while(1):
             if(~self.hash_queue.empty()):
                 self.key, self.value=self.decompose(self.hash_queue.get())
-                self.data=self.key + str(self.value)
+                self.data=self.key +" "+ str(self.value)
                 self.ut.put(self.data)
                 self.save_data.put(self.data)
                 if(self.value>0):
@@ -46,7 +44,7 @@ class KeyHasher(Thread):
     def decompose(self,data_string):
         key_value=data_string.partition(" ")
         key=key_value[0]
-        key_value[2]=key_value[2].strip(" \r\n")
-        value=int(float(key_value[2]))
+        string_value=key_value[2].strip(" \r\n")
+        value=int(float(string_value))
         return key, value            
         

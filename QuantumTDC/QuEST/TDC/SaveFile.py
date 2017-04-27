@@ -20,15 +20,22 @@ class SaveFile(Thread):
         '''
         Thread.__init__(self)
         self.save_data=save_data
-        self.filename=datetime.date.strftime(datetime.datetime.now(),'%m:%d_%H:%M:%S:%f')+".txt"
+        self.filename=datetime.date.strftime(datetime.datetime.now(),'%m-%d_%H-%M-%S')+".txt"
         #os.chdir(r'C:\Users\Quest01\Documents\TDCData')
+        print(os.getcwd())
         self.datafile=open(self.filename,"a+")
         self.switch=1
         self.setDaemon("True")
         
     def run(self):
-        while(~self.save_data.empty()):
-            self.datafile.write(self.save_data.get())
+        print("inside run of the save")
+        print(str(~(self.save_data.empty())))
+        while(str(self.save_data.empty())=="False"):
+            print("inside while")
+            datatowrite=self.save_data.get()
+            print(datatowrite)
+            self.datafile.write(datatowrite)
+            
             self.datafile.write("\n")
         self.datafile.close()
         

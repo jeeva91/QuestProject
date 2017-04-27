@@ -30,7 +30,7 @@ class ReceivedProcessor(Thread):
         self.process()
         
     def process(self):
-        while(processor_switch):
+        while(self.processor_switch):
             if(~self.received.empty()):
                 bytedata=self.received.get()
                 data=bytedata.decode('utf-8')
