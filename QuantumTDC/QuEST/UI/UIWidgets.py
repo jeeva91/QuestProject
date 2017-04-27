@@ -15,6 +15,8 @@ from QuEST.COM.Receiver_Thread import Receiver_Thread
 from QuEST.COM.Sender_Thread import Sender_Thread
 from QuEST.TDC.SaveFile import SaveFile
 from QuEST.UI.Messenger import Messenger
+from QuEST.COM.ReceivedProcessor import ReceivedProcessor
+from QuEST.COM.SendProcessor import SendProcessor
 class InputFrame(Frame):
     def __init__(self,master,label_text="label"):
         Frame.__init__(self, master,width=350,height=70)
@@ -106,10 +108,12 @@ class ConnectButton(Button):
     def __init__(self,master,all_data):
         Button.__init__(self,master,text="Connect",command=self.connect,width=12)
         self.ui=master
+        self.alldata=all_data
         self.receiver=all_data.receiver
         self.encrypt_socket=all_data.encrypt_socket
         self.received_data=all_data.received_data
         self.sender=all_data.sender
+        self.receivedprocessor=all_data.receivedprocessor
         self.send_data=all_data.send_data
     def connect(self):
         pass
@@ -124,6 +128,8 @@ class ConnectButton(Button):
         print("connected", self.encrypt_socket)
         self.receiver=Receiver_Thread(received=self.received_data,rcv_socket=self.encrypt_socket)
         self.receiver.start()
+        self.receivedprocessor=ReceivedProcessor(self.alldata)
+        self.receivedprocessor.start()
         self.sender=Sender_Thread(tosend=self.send_data,send_socket=self.encrypt_socket)
         self.sender.start()
         
@@ -132,25 +138,44 @@ class DisconnectButton(Button):
     def __init__(self,master,all_data):
         Button.__init__(self,master,text="Disconnect",command=self.disconnect,width=12)
         self.sockettoclose=all_data.encrypt_socket
+        self.sendprocessor=all_data.sendprocessor
+        self.receiver=all_data.receiver
+        self.receivedprocessor=all_data.receivedprocessor
+        self.sender=all_data.sender
+        self.messenger=all_data.messenger
+        # to make all queues empty here
+        
+        
         #self.send_thread=all_data.
     def disconnect(self):
         pass
         print("disConnecting to the server/client")
+        self.messenger.destroy()
+        self.sendprocessor.off()
+        self.receiver.off()
+        self.receivedprocessor.off()
+        self.sender.off()
+        
         self.sockettoclose.close()
         
         
 class StartSendingButton(Button):        
-    def __init__(self,master,mytcpsocket):
-        Button.__init__(self,master,text="Communicate",command=self.send,width=12)
-        self.mytcpsocket=mytcpsocket
+    def __init__(self,master,alldata):
+        Button.__init__(self,master,text="Error Check",command=self.send,width=12)
+        self.alldata=alldata
+        self.sendprocessor=alldata.sendprocessor
     def send(self):
         pass
         print("Communicating with the other lab")
+        self.sendprocessor=SendProcessor(self.alldata)
+        self.sendprocessor.start()
+        
         
 class MessengerButton(Button):
     def __init__(self,master, alldata):
         Button.__init__(self,master,text="Messenger",command=self.start_messenger,width=12)
         self.alldata=alldata
+        self.messenger=alldata.messenger
     def start_messenger(self):
         pass
         print("Starting the messenger")
@@ -185,11 +210,7 @@ class TextPadWriter(Thread):
         pass
         self.display()
     def display(self,):
-        counter=0
         while(1):
-            #self.text_pad.insert(END,counter)
-            #self.text_pad.see(END)
-            #counter=counter+1
             if(~self.data_queue.empty()):
                 data=self.data_queue.get()
                 self.text_pad.insert(END,data)
