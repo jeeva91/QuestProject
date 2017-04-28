@@ -25,6 +25,7 @@ class SettingsFrame(Frame):
         self.TDC_part.grid(row=0, column=0, sticky=W)
         self.port_input.grid(row=1,column=0, sticky=W)
         self.baud_input.grid(row=2,column=0,sticky=W)
+        self.baud_input.entry.config(state=DISABLED)   #Disabling the baud input temporarily
         self.change_button.grid(row=3,column=0,sticky=W)
         self.start_button.grid(row=4,column=0,sticky=W)
         self.stop_button.grid(row=5,column=0,sticky=W)
@@ -34,7 +35,7 @@ class SettingsFrame(Frame):
         self.comm_part=Label(self,text="Communication Setting",width=25)
         self.IP_input=UIWidgets.InputFrame(self,label_text="IP:")
         self.if_server=UIWidgets.CheckBoxFrame(self,label_text="Server")
-        self.conect=UIWidgets.ConnectButton(self,self.all_data)
+        self.connect=UIWidgets.ConnectButton(self,self.all_data)
         self.disconnect=UIWidgets.DisconnectButton(self,self.all_data)
         
         self.start_sending=UIWidgets.StartSendingButton(self,self.all_data)
@@ -43,7 +44,7 @@ class SettingsFrame(Frame):
         self.comm_part.grid(row=0,column=1,sticky=W)
         self.IP_input.grid(row=1,column=1,sticky=W)
         self.if_server.grid(row=2,column=1,sticky=W)
-        self.conect.grid(row=3,column=1,sticky=W)
+        self.connect.grid(row=3,column=1,sticky=W)
         self.disconnect.grid(row=4,column=1,sticky=W)
         
         self.start_sending.grid(row=5,column=1,sticky=W)

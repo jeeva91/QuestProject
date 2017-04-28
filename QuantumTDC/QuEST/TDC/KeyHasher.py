@@ -39,12 +39,12 @@ class KeyHasher(Thread):
                     self.goodut.put(self.data)
                     self.send_ut.put(self.data)
                     temp_key={self.data:self.value}
-                    self.hashed_key.append(temp_key)
+                    #self.hashed_key.append(temp_key)
                     
     def decompose(self,data_string):
         key_value=data_string.partition(" ")
         key=key_value[0]
         string_value=key_value[2].strip(" \r\n")
-        value=int(float(string_value))
+        value=float(string_value)
         return key, value            
         

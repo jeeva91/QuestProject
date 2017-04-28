@@ -40,7 +40,7 @@ class InputFrame(Frame):
                 #print("default baud rate 38400 chosen")
                 data=38400
                 return data
-            else: return data
+        else: return data
     
 class CheckBoxFrame(Frame):
     def __init__(self,master,label_text="server"):
@@ -57,6 +57,7 @@ class ChangeButton(Button):
     def __init__(self,master,all_data):
         Button.__init__(self,master,text="Change",command=self.change,width=12)
         self.tdc_reader=all_data.tdc_reader
+        self.config(state=DISABLED)
     def change(self):
         pass
         print("Changed clicked")
@@ -74,12 +75,16 @@ class StartButton(Button):
     def start(self):
         pass
         print("Starting to read from TDC")
+        self.ui.stop_button.config(state=NORMAL)
+        self.config(state=DISABLED)
         if(str(type(self.serial_reader))=="<class 'str'>"):
             print("initializing TDC")
             self.serial_reader=TDCReader() #initialize the serial reader
-            self.serial_reader.port=self.ui.port_input.get_data() #set the port number
+            port=self.ui.port_input.get_data()
+            print(port)
+            self.serial_reader.port=port #set the port number
             self.serial_reader.baudrate=self.ui.baud_input.get_data() #set the baudrate
-        if(str(type(self.tdc_reader))=="<class 'str'>"):
+        if(self.all_data.tdc_reader==""):
             self.tdc_reader=TDCReaderThread(self.hash_queue,self.serial_reader) #initalize the reader thread
             self.tdc_reader.start() #start the thread
             self.all_data.tdc_reader=self.tdc_reader
@@ -101,10 +106,14 @@ class StopButton(Button):
         self.alldata=alldata
         print(type(self.serial_reader))
         self.saver=master.saver
+        self.config(state=DISABLED)
+        self.start_button=master.start_button
     def stop(self):
         pass
         print("Stopping to read from TDC")
         self.saver.config(state=NORMAL)
+        self.config(state=DISABLED)
+        self.start_button.config(state=NORMAL)
         print("inside stop button")
         self.serial_reader=self.alldata.tdc_reader
         print((str(type(self.serial_reader))=="<class 'str'>"))
@@ -113,7 +122,7 @@ class StopButton(Button):
             if(self.serial_reader.is_alive()):
                 self.serial_reader.stop_reading()
                 self.serial_reader.join()
-                self.serial_reader=""
+                self.alldata.tdc_reader=""
                 
             
         
@@ -128,8 +137,15 @@ class ConnectButton(Button):
         self.sender=all_data.sender
         self.receivedprocessor=all_data.receivedprocessor
         self.send_data=all_data.send_data
+        
     def connect(self):
-        pass
+        self.disconnect=self.ui.disconnect
+        self.communicate=self.ui.start_sending
+        self.messenger_button=self.ui.messenger
+        self.config(state=DISABLED)
+        self.disconnect.config(state=NORMAL)
+        self.communicate.config(state=NORMAL)
+        self.messenger_button.config(state=NORMAL)
         print("Connecting to the server/client")
         self.IP=self.ui.IP_input.get_data()
         self.if_server=self.ui.if_server.getvalue()
@@ -157,14 +173,26 @@ class DisconnectButton(Button):
         self.receivedprocessor=all_data.receivedprocessor
         self.sender=all_data.sender
         self.messenger=all_data.messenger
+        self.config(state=DISABLED)
+        self.master=master
+        
         # to make all queues empty here
         
         
         #self.send_thread=all_data.
     def disconnect(self):
-        pass
+        self.connect=self.master.connect
+        self.communicate=self.master.start_sending
+        self.messenger_button=self.master.messenger
         print("disConnecting to the server/client")
-        self.messenger.destroy()
+        self.connect.config(state=NORMAL)
+        self.config(state=DISABLED)
+        self.communicate.config(state=DISABLED)
+        self.messenger_button.config(state=DISABLED)
+        if(self.messenger==""):
+            pass
+        else:
+            self.messenger.destroy()
         self.sendprocessor.off()
         self.receiver.off()
         self.receivedprocessor.off()
@@ -178,6 +206,7 @@ class StartSendingButton(Button):
         Button.__init__(self,master,text="Error Check",command=self.send,width=12)
         self.alldata=alldata
         self.sendprocessor=alldata.sendprocessor
+        self.config(state=DISABLED)
     def send(self):
         pass
         print("Communicating with the other lab")
@@ -190,6 +219,7 @@ class MessengerButton(Button):
         Button.__init__(self,master,text="Messenger",command=self.start_messenger,width=12)
         self.alldata=alldata
         self.messenger=alldata.messenger
+        self.config(state=DISABLED)
     def start_messenger(self):
         pass
         print("Starting the messenger")
@@ -203,6 +233,7 @@ class SaveButton(Button):
     def start_save(self):
         pass
         print("Starting to save")
+        self.config(state=DISABLED)
         self.saver=SaveFile(self.save_data)
         self.saver.start()
         
