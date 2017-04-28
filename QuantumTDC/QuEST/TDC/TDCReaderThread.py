@@ -34,6 +34,7 @@ class TDCReaderThread(Thread):
             data=macrotime+" "+string_data
             print(data)
             self.hash_queue.put(data)
+        self.tdc_reader.stop_TDC()
                         
     def stop_reading(self):
         self.tdc_switch="False"
