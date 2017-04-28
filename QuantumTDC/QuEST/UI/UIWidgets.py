@@ -81,7 +81,7 @@ class StartButton(Button):
             print("initializing TDC")
             self.serial_reader=TDCReader() #initialize the serial reader
             port=self.ui.port_input.get_data()
-            print(port)
+            #print(port)
             self.serial_reader.port=port #set the port number
             self.serial_reader.baudrate=self.ui.baud_input.get_data() #set the baudrate
         if(self.all_data.tdc_reader==""):
